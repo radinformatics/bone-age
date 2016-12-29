@@ -40,7 +40,7 @@ RUN pip install six==1.10.0
 RUN wget http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/3.2.0/opencv-3.2.0.zip
 RUN unzip opencv-3.2.0.zip
 WORKDIR opencv-3.2.0
-RUN python setup.py install
+RUN cp build/python/2.7/cv2.pyd /usr/local/lib/python2.7/site-packages
 
 # Make directories for code and data
 RUN mkdir /code
