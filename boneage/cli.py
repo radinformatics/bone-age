@@ -72,8 +72,7 @@ def main():
     image = args.image
     if image == None:
         from utils import select_example_image
-        # Note - I currently force image 5, since we know is male
-        image = select_example_image(start=5,end=6)
+        image = select_example_image(start=0,end=9)
 
     # Get the array of data (uint8)
     image = get_image(image_path=image,
