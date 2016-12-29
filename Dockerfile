@@ -8,10 +8,21 @@ RUN apt-get update && apt-get install -y libtiff5-dev \
                       liblcms2-dev \
                       libwebp-dev tcl8.6-dev \
                       tk8.6-dev \
-                      python-tk
+                      wget \
+                      python \
+                      unzip \
+                      python-tk \
+                      python-dev \ 
+                      libffi-dev \ 
+                      libssl-dev
 
 # Software dependencies. 
 # This is equivalent of requirements.txt, run on image build
+RUN pip install --upgrade pip
+RUN pip install requests==2.5.3
+RUN pip install pyOpenSSL 
+RUN pip install ndg-httpsclient 
+RUN pip install pyasn1
 RUN pip install cycler==0.10.0
 RUN pip install h5py==2.6.0
 RUN pip install matplotlib==1.5.3
@@ -26,6 +37,10 @@ RUN pip install pytz==2016.4
 RUN pip install runcython==0.2.5
 RUN pip install scipy==0.18.1
 RUN pip install six==1.10.0
+RUN wget http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/3.2.0/opencv-3.2.0.zip
+RUN unzip opencv-3.2.0.zip
+WORKDIR opencv-3.2.0
+RUN python setup.py install
 
 # Make directories for code and data
 RUN mkdir /code
