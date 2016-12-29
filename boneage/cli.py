@@ -32,13 +32,13 @@ def get_parser():
 
     parser.add_argument("--width", 
                         dest='width', 
-                        help="width of the image in pixels (default 256)", 
+                        help="warped width to resize the image in pixels (default 256)", 
                         type=int,
                         default=256)
 
     parser.add_argument("--height", 
                         dest='height', 
-                        help="height of the image in pixels (default 256)", 
+                        help="warped height to resize the image in pixels (default 256)", 
                         type=int,
                         default=256)
 
@@ -74,7 +74,7 @@ def main():
         from utils import select_example_image
         image = select_example_image(start=0,end=9)
 
-    # Get the array of data (uint8)
+    # Get the array of data (uint8) - H/W should be set to 256
     image = get_image(image_path=image,
                       warped_height=args.height,
                       warped_width=args.width)

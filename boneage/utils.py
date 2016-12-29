@@ -24,8 +24,9 @@ def get_image(image_path,warped_height=256,warped_width=256):
         bot.logger.error("Error, cannot find %s, exiting!",image)
         sys.exit(1)
 
-    return import_image(image, height, width)
-
+    return import_image(img_path=image, 
+                        warped_height=height, 
+                        warped_width=width)
 
 def import_image(img_path, warped_height=256, warped_width=256):
     '''import image will return the ind-th image specified by 
