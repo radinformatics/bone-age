@@ -66,7 +66,13 @@ def main():
     # Tell the user what is going to be used, in case is incorrect
     from logman import bot
     from predict_image import Model
+    from utils import get_image
     print("\n*** Starting Bone Age Prediction ****")
+
+    # Get the gender
+    is_male = True
+    if args.gender == "F":
+        is_male = False
 
     # If the user has not provided an image, use an example
     image = args.image
@@ -74,15 +80,18 @@ def main():
         print("No image selected, will use provided example...")
         from utils import select_example_image
         image = select_example_image(start=0,end=9)
+        is_male = True # all examples male
+
+    # Print parameters for user
+    bot.logger.debug("is_male: %s", is_male)
+    bot.logger.debug("image: %s", image)
+    bot.logger.debug("height: %s", args.height)
+    bot.logger.debug("width: %s", args.width)
 
     # Get the array of data (uint8) - H/W should be set to 256
     image = get_image(image_path=image,
                       warped_height=args.height,
                       warped_width=args.width)
-
-    is_male = True
-    if args.gender == "F":
-        is_male = False
 
     print("Building model, please wait.")
     model = Model()

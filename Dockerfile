@@ -74,6 +74,11 @@ RUN mkdir /data
 # Add the code
 ADD . /code
 
+# Download data models
+WORKDIR /code/boneage/data
+RUN wget https://storage.googleapis.com/langlotzlab-models/bone-age/bone-age-checkpoint.ckpt-19999
+RUN wget https://storage.googleapis.com/langlotzlab-models/bone-age/bone-age-checkpoint.ckpt-19999.meta
+
 # Clean up
 RUN apt-get autoremove -y
 RUN apt-get clean

@@ -19,7 +19,7 @@ def clahe_augment(img):
 class Model:
 
     def __init__(self):
-        checkpoint_path = 'data/checkpoint.ckpt-19999'
+        checkpoint_path = 'data/bone-age-checkpoint.ckpt-19999'
         self.model = Resnet50(checkpoint_path)
 
     def get_scores(self, image, is_male):

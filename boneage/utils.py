@@ -6,6 +6,12 @@ Utility functions for bone age prediction demo
 
 import os
 from logman import bot
+
+from numpy import (
+    array,
+    uint8
+)
+
 from PIL import Image
 import sys
 
@@ -25,8 +31,8 @@ def get_image(image_path,warped_height=256,warped_width=256):
         sys.exit(1)
 
     return import_image(img_path=image, 
-                        warped_height=height, 
-                        warped_width=width)
+                        warped_height=warped_height, 
+                        warped_width=warped_width)
 
 def import_image(img_path, warped_height=256, warped_width=256):
     '''import image will return the ind-th image specified by 
@@ -41,7 +47,7 @@ def import_image(img_path, warped_height=256, warped_width=256):
 
     # image resize is specified with width then height in PIL Image
     img_data = Image.open(img_path).resize((warped_width,warped_height))
-    img_array = np.array(img_data.convert('L'))
+    img_array = array(img_data.convert('L'))
 
     # In rare cases the image has three channels instead of 1
     if len(img_array.shape) > 2:
@@ -49,7 +55,7 @@ def import_image(img_path, warped_height=256, warped_width=256):
         bot.logger.debug(img_array.shape)
 
     # Must be uint8 to continue
-    if img_array.dtype != np.uint8:
+    if img_array.dtype != uint8:
         bot.logger.error("Image array data type is not uint8. Exiting.")
         sys.exit(1)
 
