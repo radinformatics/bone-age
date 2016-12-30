@@ -16,12 +16,11 @@ def get_parser():
                         type=str,
                         default=None)
 
-    parser.add_argument("--folder", 
-                        dest='folder', 
-                        help="Path to folder of images to parse.", 
+    parser.add_argument("--output", 
+                        dest='output', 
+                        help="Path to output file to write results.", 
                         type=str,
                         default=None)
-
 
     parser.add_argument("--gender", 
                         dest='gender', 
@@ -66,7 +65,7 @@ def main():
     # Tell the user what is going to be used, in case is incorrect
     from logman import bot
     from predict_image import Model
-    from utils import get_image
+    from utils import get_image, write_json
     print("\n*** Starting Bone Age Prediction ****")
 
     # Get the gender
@@ -95,10 +94,15 @@ def main():
 
     print("Building model, please wait.")
     model = Model()
-    scores = model.get_scores(image,is_male=is_male)
+    result = model.get_result(image,is_male=is_male)
 
-    print('Predicted Age : %d Months' % np.argmax(scores))
-    print('Weighted Prediction : %f Months' % model.calc_weighted_prediction(scores))
+    print('Predicted Age : %d Months' %result['predicted_age'])
+    print('Weighted Prediction : %f Months' %result['predicted_weight'])
+
+    if args.output != None:
+        output = write_json(json_object=result,
+                            filename=args.output)        
+        bot.logger.debug('Result written to %s',args.output)
 
 if __name__ == '__main__':
     main()

@@ -47,6 +47,7 @@ RUN pip install pytz==2016.4
 RUN pip install runcython==0.2.5
 RUN pip install scipy==0.18.1
 RUN pip install six==1.10.0
+RUN pip install simplejson
 
 # Build and install OpenCV
 RUN wget https://github.com/Itseez/opencv/archive/3.1.0.zip

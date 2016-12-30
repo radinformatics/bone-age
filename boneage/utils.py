@@ -13,6 +13,7 @@ from numpy import (
 )
 
 from PIL import Image
+import simplejson
 import sys
 
 
@@ -99,3 +100,18 @@ def check_type(variable,desired_type):
     if not isinstance(variable,desired_type):
         variable = desired_type(variable)
     return variable
+
+
+def write_json(json_object,filename,mode="w",print_pretty=True):
+    '''write_json will (optionally,pretty print) a json object to file
+    :param json_object: the dict to print to json
+    :param filename: the output file to write to
+    :param pretty_print: if True, will use nicer formatting   
+    '''
+    with open(filename,mode) as filey:
+        if print_pretty == True:
+            filey.writelines(simplejson.dumps(json_object, indent=4, separators=(',', ': ')))
+        else:
+            filey.writelines(simplejson.dumps(json_object))
+    filey.close()
+    return filename

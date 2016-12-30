@@ -12,24 +12,29 @@ If you are working on your local machine, you can use either Docker or Singulari
 
 Packages that need to be installed are included in [requirements.txt](requirements.txt) and installed into the container via the [Dockerfile](Dockerfile).
 
-# Singularity
 
-## 1. Install Singularity
+# Docker
 
-Instructions can be found on the [singularity site](https://singularityware.github.io).
+## Getting Started
+You should first [install Docker](https://docs.docker.com/engine/installation/). The container is provided on [Docker Hub](https://hub.docker.com/r/vanessa/boneage/) and can be downloaded from there when you run it, and this is recommended because building it takes a while to compile OpenCV.
 
-## 2. Bootstrap the image
-Bootstrapping means using something to build from, or not starting from nothing. In this case, we are going to use a build file that bootstraps a Docker image of the PE Finder (yes, the same one discussed shortly after). This build file is called [Singularity](Singularity), and for more details about this you can [read here](http://singularity.lbl.gov/docs-docker).
+### I want to build it!
+If you want to look at or make changes to the code, it's recommended to clone the repo and build the container locally:
 
-    sudo singularity create --size 6000 boneage.img
-    sudo singularity bootstrap boneage.img Singularity
+    git clone http://www.github.com/radinformatics/bone-age
+    cd bone-age
+    docker build -t vanessa/boneage .
+
+The docker daemon will first look for an image called `vanessa/boneage` locally, and if not found, will then try Dockerhub, and download it from there. If for any reason you want to remove your image, just do the following:
+
+    docker rmi vanessa/boneage
 
 
-## 3. Run commands
+## Running commands
 The entry to the container is done simply by using it as an executable:
 
 
-	./boneage.img --help
+	docker run vanessa/boneage --help
 	usage: cli.py [-h] [--image IMAGE] [--folder FOLDER] [--gender {M,F}]
 		      [--width WIDTH] [--height HEIGHT] [--debug]
 
@@ -45,11 +50,124 @@ The entry to the container is done simply by using it as an executable:
 	  --debug          use verbose logging to debug.
 
 
-### **TODO Vanessa** 
-- parse and show help
-- provide runscript to run prediction algorithm, optionally binding an entire directory to data to run for many images
-- docker-compose file should run local server, in which case the same runscript is executed with an argument to start the webserver.
 
+### Run Prediction With Example
+To run the bone-age demo non interactively to get a prediction, you can run it without any arguments:
+
+      docker run vanessa/boneage
+
+	*** Starting Bone Age Prediction ****
+	No image selected, will use provided example...
+	Building model, please wait.
+	Predicted Age : 14 Months
+	Weighted Prediction : 11.840608 Months
+
+
+The command above is saying "map the folder `$PWD/example_images` (where my 4.png is located) to the `/data` folder in the container. Then, tell the script in the container to use the image located at `/data/4.png`. If you want to see debug output (for more details about running) you can add `--debug`
+
+
+      docker run vanessa/boneage --debug
+
+	Environment message level found to be DEBUG
+
+	*** Starting Bone Age Prediction ****
+	No image selected, will use provided example...
+	DEBUG:bone-age:is_male: True
+	DEBUG:bone-age:image: /code/example_images/5.png
+	DEBUG:bone-age:height: 256
+	DEBUG:bone-age:width: 256
+	DEBUG:PIL.PngImagePlugin:STREAM IHDR 16 13
+	DEBUG:PIL.PngImagePlugin:STREAM IDAT 41 65536
+	Building model, please wait.
+	Predicted Age : 8 Months
+	Weighted Prediction : 8.610813 Months
+
+
+### Run Prediction With Your Own Image
+If you want to provide your own image, you need to bind it to the /data directory in the folder, and map a path to it. Don't forget to specify the gender - the default is male, and you may want to change that:
+
+       
+       docker run -v $PWD/example_images:/data vanessa/boneage --image /data/4.png
+
+	*** Starting Bone Age Prediction ****
+	Building model, please wait.
+	Predicted Age : 8 Months
+	Weighted Prediction : 8.641131 Months
+
+
+We can of course add debug to verify that the default is male, and we are using our mapped image:
+
+
+        docker run -v $PWD/example_images:/data vanessa/boneage --image /data/4.png --debug
+	Environment message level found to be DEBUG
+
+	*** Starting Bone Age Prediction ****
+	DEBUG:bone-age:is_male: True
+	DEBUG:bone-age:image: /data/4.png
+	DEBUG:bone-age:height: 256
+	DEBUG:bone-age:width: 256
+	DEBUG:PIL.PngImagePlugin:STREAM IHDR 16 13
+	DEBUG:PIL.PngImagePlugin:STREAM IDAT 41 65536
+	Building model, please wait.
+	Predicted Age : 8 Months
+	Weighted Prediction : 8.641131 Months
+
+
+We can specify a different gender, and the prediction changes:
+
+        docker run -v $PWD/example_images:/data vanessa/boneage --image /data/4.png --gender F --debug
+	Environment message level found to be DEBUG
+
+	Environment message level found to be DEBUG
+
+	*** Starting Bone Age Prediction ****
+	DEBUG:bone-age:is_male: False
+	DEBUG:bone-age:image: /data/4.png
+	DEBUG:bone-age:height: 256
+	DEBUG:bone-age:width: 256
+	DEBUG:PIL.PngImagePlugin:STREAM IHDR 16 13
+	DEBUG:PIL.PngImagePlugin:STREAM IDAT 41 65536
+	Building model, please wait.
+	Predicted Age : 16 Months
+	Weighted Prediction : 16.000000 Months
+
+
+### Save output to file
+If you specify the `--output` argument, you can save the result as a json to file. Again, we will need to specify a file in a folder mapped to our local machine:
+
+      docker run -v $PWD/example_images:/data vanessa/boneage --output /data/demo.json --debug
+
+
+## How do I shell into the container?
+By default, running the container uses the `ENTRYPOINT`, meaning it is used as an executable and you do not enter the container. In the case that you want a container-based environment that is installed with the dependencies of boneage, or if you want to interactively work with the code, you may want to shell into the container.
+
+      docker run -it --entrypoint /bin/bash vanessa/boneage
+
+Keep in mind that once you exit from this run, the container image is not saved, including your changes.
+
+
+
+# Singularity
+
+## 1. Install Singularity
+
+Instructions can be found on the [singularity site](https://singularityware.github.io).
+
+## 2. Bootstrap the image
+Bootstrapping means using something to build from, or not starting from nothing. In this case, we are going to use a build file that bootstraps a Docker image of boneage (yes, the same one discussed above). This build file is called [Singularity](Singularity), and for more details about this you can [read here](http://singularity.lbl.gov/docs-docker).
+
+    sudo singularity create --size 6000 boneage.img
+    sudo singularity bootstrap boneage.img Singularity
+
+
+## 3. Run commands
+The commands are equivalent as above, except we can use the container as an executable:
+
+      ./boneage.img --help
+
+and to make a drive, we use `--bind` instead
+
+      singularity run --bind $PWD/example_images:/data boneage.img --debug
 
 
 ## How do I shell into the container?
@@ -58,49 +176,8 @@ Singularity has an easy, intuitive way to shell inside!
       singularity shell boneage.img
 
 
-**NOT YET WRITTEN**
 
-# Docker
-
-## Getting Started
-You should first [install Docker](https://docs.docker.com/engine/installation/). The container is provided on [Docker Hub](https://hub.docker.com/r/vanessa/pefinder/) and can be downloaded from there when you run it, however if you want to look at or make changes to the code, it's recommended to clone the repo and build the container locally:
-
-    git clone http://www.github.com/radinformatics/bone-age-demo
-    cd bone-age-demo
-    docker build -t vanessa/bone-age-demo .
-
-
-
-## How do I shell into the container?
-By default, running the container uses the `ENTRYPOINT`, meaning it is used as an executable and you do not enter the container. In the case that you want a container-based environment that is installed with the dependencies of PEFinder, or if you want to interactively work with the code, you may want to shell into the container. If there is a running container (eg an analysis) and you want to open up another terminal on your local machine to look inside (while it's running!) you need to get the 12 digit identifier with `docker ps`, and then plug it into this command:
-
-      docker exec -it dc70464c6eb5 bash
-
-This says we want to execute (exec) and (interactive)(terminal) for container with id (af21bf1d48a6) and run the command (bash)
-
-If the container isn't running, then you can use `run`:
-
-      docker run -it --entrypoint /bin/sh vanessa/boneage
-
-
-
-# Input arguments
-
-**todo**
-
-# Examples
-For each of the examples, the equivalent Docker and Singularity commands are provided.
-
-## Command Line
-
-### Classifying One Image
-
-**todo**
-
-### Classifying Folder of Images
-
-
-## Interactive Web Interface
+# Interactive Web Interface
 
 **todo**
 

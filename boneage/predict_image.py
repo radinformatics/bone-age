@@ -15,12 +15,40 @@ def clahe_augment(img):
     augmented_img = np.swapaxes(augmented_img,1,2)
     return augmented_img
 
-
+    
 class Model:
 
     def __init__(self):
         checkpoint_path = 'data/bone-age-checkpoint.ckpt-19999'
         self.model = Resnet50(checkpoint_path)
+
+
+    def get_result(self, image, is_male, include_scores=False):
+        '''get_result will return a json structure with the image, gender,
+        max score, and prediction, intended for saving to file.
+
+        Args:
+            image : numpy array to be downsized and processed
+            is_male : boolean indicating whether or not image of male patient
+        Return:
+            result: json object with scores, image, and gender
+        '''
+        scores = self.get_scores(image=image,is_male=is_male)
+        weighted_prediction = self.calc_weighted_prediction(scores)
+
+        gender = "M"
+        if is_male == False:
+            gender = "F"
+
+        result = {'image':image,
+                  'predicted_age':numpy.argmax(scores),
+                  'predicted_weight':weighted_prediction,
+                  'gender':gender}        
+
+        if include_scores == True:
+            result['scores'] = scores
+
+        return result
 
     def get_scores(self, image, is_male):
         '''get_scores
