@@ -66,11 +66,12 @@ def main():
     # Tell the user what is going to be used, in case is incorrect
     from logman import bot
     from predict_image import Model
-    bot.logger.info("\n***STARTING BONE AGE PREDICTION****")
+    print("\n*** Starting Bone Age Prediction ****")
 
     # If the user has not provided an image, use an example
     image = args.image
     if image == None:
+        print("No image selected, will use provided example...")
         from utils import select_example_image
         image = select_example_image(start=0,end=9)
 
@@ -83,6 +84,7 @@ def main():
     if args.gender == "F":
         is_male = False
 
+    print("Building model, please wait.")
     model = Model()
     scores = model.get_scores(image,is_male=is_male)
 

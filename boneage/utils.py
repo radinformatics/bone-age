@@ -67,7 +67,7 @@ def select_example_image(basepath=None,start=0,end=9,extension=None):
     from random import sample
     image = None
     if basepath == None:
-        basepath = '/code/examples_images'
+        basepath = '/code/example_images'
 
     if extension == None:
         extension = "png"

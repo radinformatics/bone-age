@@ -80,4 +80,5 @@ RUN apt-get clean
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 RUN chmod u+x /code/boneage/cli.py
 
-ENTRYPOINT ["python","/code/boneage/cli.py"]
+WORKDIR /code/boneage
+ENTRYPOINT ["/usr/bin/python","/code/boneage/cli.py"]

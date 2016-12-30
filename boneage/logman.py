@@ -10,7 +10,7 @@ class Logman:
             logging.basicConfig(stream=sys.stdout,level=self.level)
         else:
             logging.basicConfig(level=self.level)
-        self.logger = logging.getLogger('shub_builder')
+        self.logger = logging.getLogger('bone-age')
         self.formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 
