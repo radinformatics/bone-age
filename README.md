@@ -35,7 +35,7 @@ The entry to the container is done simply by using it as an executable:
 
 
 	docker run vanessa/boneage --help
-	usage: cli.py [-h] [--image IMAGE] [--folder FOLDER] [--gender {M,F}]
+	usage: cli.py [-h] [--image IMAGE] [--output OUTPUT] [--gender {M,F}]
 		      [--width WIDTH] [--height HEIGHT] [--debug]
 
 	Predict bone age of an image.
@@ -43,7 +43,7 @@ The entry to the container is done simply by using it as an executable:
 	optional arguments:
 	  -h, --help       show this help message and exit
 	  --image IMAGE    Path to single bone image.
-	  --folder FOLDER  Path to folder of images to parse.
+	  --output OUTPUT  Path to output file to write results.
 	  --gender {M,F}   the gender of the individual (M or F), default is M (male)
 	  --width WIDTH    warped width to resize the image in pixels (default 256)
 	  --height HEIGHT  warped height to resize the image in pixels (default 256)
@@ -60,7 +60,7 @@ To run the bone-age demo non interactively to get a prediction, you can run it w
 	No image selected, will use provided example...
 	Building model, please wait.
 	Predicted Age : 14 Months
-	Weighted Prediction : 11.840608 Months
+	Weighted Prediction : 11.832177 Months
 
 
 The command above is saying "map the folder `$PWD/example_images` (where my 4.png is located) to the `/data` folder in the container. Then, tell the script in the container to use the image located at `/data/4.png`. If you want to see debug output (for more details about running) you can add `--debug`
@@ -136,6 +136,34 @@ We can specify a different gender, and the prediction changes:
 If you specify the `--output` argument, you can save the result as a json to file. Again, we will need to specify a file in a folder mapped to our local machine:
 
       docker run -v $PWD/example_images:/data vanessa/boneage --output /data/demo.json --debug
+
+	Environment message level found to be DEBUG
+
+	*** Starting Bone Age Prediction ****
+	No image selected, will use provided example...
+	DEBUG:bone-age:is_male: True
+	DEBUG:bone-age:image: /code/example_images/4.png
+	DEBUG:bone-age:height: 256
+	DEBUG:bone-age:width: 256
+	DEBUG:PIL.PngImagePlugin:STREAM IHDR 16 13
+	DEBUG:PIL.PngImagePlugin:STREAM IDAT 41 65536
+	Building model, please wait.
+	Predicted Age : 8 Months
+	Weighted Prediction : 8.641131 Months
+	DEBUG:bone-age:Result written to /data/demo.json
+
+Now we can look at the data - remember the folder that was mapped on our local machine is `$PWD/example_images`
+
+        cat $PWD/example_images/demo.json
+        {
+           "gender": "M",
+           "image": "/code/example_images/4.png",
+           "predicted_age": 8,
+           "predicted_weight": 8.64113067092668
+        }
+
+
+The function inside the container to generate this result could be scaled by either providing an input argument for the user to specify an input file (with image paths and genders) and a single output file to write to, or running the command many times to write separate output files, or having a `--silent` option to suppress all output (except for the result) that could be piped (appended) into a single output file. All of these could be implemented, it really depends on the desired outcome. For the current purpose (plugging the container into a web server for a demo) the above that produces a single file, or multiple single files, is a reasonable approach.
 
 
 ## How do I shell into the container?

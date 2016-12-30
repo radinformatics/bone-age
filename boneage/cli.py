@@ -88,13 +88,16 @@ def main():
     bot.logger.debug("width: %s", args.width)
 
     # Get the array of data (uint8) - H/W should be set to 256
+    image_path = image
     image = get_image(image_path=image,
                       warped_height=args.height,
                       warped_width=args.width)
 
     print("Building model, please wait.")
     model = Model()
-    result = model.get_result(image,is_male=is_male)
+    result = model.get_result(image=image,
+                              image_path=image_path,
+                              is_male=is_male)
 
     print('Predicted Age : %d Months' %result['predicted_age'])
     print('Weighted Prediction : %f Months' %result['predicted_weight'])

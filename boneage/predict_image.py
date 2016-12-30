@@ -23,12 +23,13 @@ class Model:
         self.model = Resnet50(checkpoint_path)
 
 
-    def get_result(self, image, is_male, include_scores=False):
+    def get_result(self, image_path, image, is_male, include_scores=False):
         '''get_result will return a json structure with the image, gender,
         max score, and prediction, intended for saving to file.
 
         Args:
             image : numpy array to be downsized and processed
+            image_path : the path to the image for the image array
             is_male : boolean indicating whether or not image of male patient
         Return:
             result: json object with scores, image, and gender
@@ -40,8 +41,8 @@ class Model:
         if is_male == False:
             gender = "F"
 
-        result = {'image':image,
-                  'predicted_age':numpy.argmax(scores),
+        result = {'image':image_path,
+                  'predicted_age':np.argmax(scores),
                   'predicted_weight':weighted_prediction,
                   'gender':gender}        
 
