@@ -12,13 +12,6 @@ If you are working on your local machine, you can use either Docker or Singulari
 
 Packages that need to be installed are included in [requirements.txt](requirements.txt) and installed into the container via the [Dockerfile](Dockerfile).
 
-# Questions for Group
-
-- Are all the example images male? I would like to select one randomly, and right now have it hard coded to 5 since I'm not sure they are all male.
-- I removed protobuf/tensorflow dependencies from requirements.txt in favor of the tensorflow Docker image (version 0.9.0)
-- I noticed that the size (256*256) is hard coded in several places - is this required? I had started to make it a variable for the cli.
-
-
 # Singularity
 
 ## 1. Install Singularity
@@ -37,7 +30,19 @@ The entry to the container is done simply by using it as an executable:
 
 
 	./boneage.img --help
+	usage: cli.py [-h] [--image IMAGE] [--folder FOLDER] [--gender {M,F}]
+		      [--width WIDTH] [--height HEIGHT] [--debug]
 
+	Predict bone age of an image.
+
+	optional arguments:
+	  -h, --help       show this help message and exit
+	  --image IMAGE    Path to single bone image.
+	  --folder FOLDER  Path to folder of images to parse.
+	  --gender {M,F}   the gender of the individual (M or F), default is M (male)
+	  --width WIDTH    warped width to resize the image in pixels (default 256)
+	  --height HEIGHT  warped height to resize the image in pixels (default 256)
+	  --debug          use verbose logging to debug.
 
 
 ### **TODO Vanessa** 
